@@ -1,5 +1,5 @@
-const APP = "mallorca-app-v3", TILES = "mallorca-tiles-v2";
-const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-512.png",
+const APP = "mallorca-app-v4", TILES = "mallorca-tiles-v2";
+const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-512.png", "./map.jpg",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"];
 self.addEventListener("install", e => { e.waitUntil(caches.open(APP).then(c => c.addAll(SHELL)).catch(()=>{})); self.skipWaiting(); });
