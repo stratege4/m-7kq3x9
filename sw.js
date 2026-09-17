@@ -1,4 +1,4 @@
-const APP = "mallorca-app-v4", TILES = "mallorca-tiles-v2";
+const APP = "mallorca-app-v5", TILES = "mallorca-tiles-v5";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-512.png", "./map.jpg",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"];
@@ -9,6 +9,10 @@ self.addEventListener("fetch", e => {
   if(e.request.method !== "GET") return;
   if(url.hostname.includes("arcgisonline.com") || false || url.hostname === "upload.wikimedia.org" || url.hostname.includes("gstatic.com")){
     e.respondWith(caches.open(TILES).then(async c => { const hit = await c.match(e.request); if(hit) return hit; try{ const res = await fetch(e.request); if(res.ok || res.type==="opaque") c.put(e.request, res.clone()); return res; }catch(err){ return hit || Response.error(); } }));
+    return;
+  }
+  if(url.origin === location.origin && (e.request.mode === "navigate" || url.pathname.endsWith(".html") || url.pathname.endsWith("/"))){
+    e.respondWith(fetch(e.request).then(res => { const c = res.clone(); caches.open(APP).then(ca => ca.put(e.request, c)); return res; }).catch(() => caches.match(e.request).then(h => h || caches.match("./index.html"))));
     return;
   }
   if(url.origin === location.origin || url.hostname === "cdnjs.cloudflare.com" || url.hostname === "fonts.googleapis.com"){
