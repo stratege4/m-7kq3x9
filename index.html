@@ -568,8 +568,8 @@ function initMap(){
   let mode = "relief";
   window.setMapMode = m => {
     mode = m; [sat, topo].forEach(l => map.hasLayer(l) && map.removeLayer(l));
-    if(m === "relief"){ if(map.getZoom() > 14) map.setZoom(14); map.setMaxZoom(14); if(!map.hasLayer(roads)) roads.addTo(map); $("#attrib").textContent = ""; }
-    else { (m === "karte" ? topo : sat).addTo(map); map.removeLayer(roads); map.setMaxZoom(18); $("#attrib").textContent = MODES[m][2]; }
+    if(m === "relief"){ if(map.getZoom() > 14) map.setZoom(14); map.setMaxZoom(14); if(!map.hasLayer(roads)) roads.addTo(map); if(!map.hasLayer(base)) base.addTo(map); $("#attrib").textContent = ""; }
+    else { (m === "karte" ? topo : sat).addTo(map); map.removeLayer(roads); map.removeLayer(base); map.setMaxZoom(18); $("#attrib").textContent = MODES[m][2]; }
     $("#satBtn").classList.toggle("on", m !== "relief");
     document.querySelectorAll("#modepick button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m));
   };
