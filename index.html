@@ -570,6 +570,7 @@ function initMap(){
     mode = m; [sat, topo].forEach(l => map.hasLayer(l) && map.removeLayer(l));
     if(m === "relief"){ if(map.getZoom() > 14) map.setZoom(14); map.setMaxZoom(14); if(!map.hasLayer(roads)) roads.addTo(map); if(!map.hasLayer(base)) base.addTo(map); $("#attrib").textContent = ""; }
     else { (m === "karte" ? topo : sat).addTo(map); map.removeLayer(roads); map.removeLayer(base); map.setMaxZoom(18); $("#attrib").textContent = MODES[m][2]; }
+    if(m === "karte"){ townMajor.remove(); townMinor.remove(); } else { townMajor.addTo(map); if(map.getZoom() >= 11) townMinor.addTo(map); }
     $("#satBtn").classList.toggle("on", m !== "relief");
     document.querySelectorAll("#modepick button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m));
   };
@@ -583,7 +584,7 @@ function initMap(){
   map.setMaxZoom(14);
   const townMajor = L.layerGroup().addTo(map), townMinor = L.layerGroup();
   DATA.labels.forEach(([la,ln,name]) => { const major = MAJOR.has(name); L.marker([la,ln],{interactive:false,keyboard:false,icon:L.divIcon({className:"",html:`<span class="lbl town ${major?"major":""}">${esc(name)}</span>`,iconSize:null,iconAnchor:major?[20,-14]:[16,-12]})}).addTo(major?townMajor:townMinor); });
-  map.on("zoomend", () => { if(map.getZoom() >= 11) townMinor.addTo(map); else townMinor.remove(); });
+  map.on("zoomend", () => { if(map.getZoom() >= 11 && mode !== "karte") townMinor.addTo(map); else townMinor.remove(); });
   routeLayer = L.layerGroup().addTo(map);
   poiLabelLayer = L.layerGroup().addTo(map);
   markerLayer = L.layerGroup().addTo(map);
