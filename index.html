@@ -110,6 +110,11 @@ p{margin:0}
 
 /* mood */
 .cycles{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.modepick{position:absolute;right:66px;top:calc(var(--safe-t) + 190px);z-index:760;display:flex;flex-direction:column;gap:4px;padding:6px}
+.modepick button{display:flex;align-items:center;gap:8px;border:0;background:transparent;border-radius:12px;padding:9px 12px;font-weight:700;font-size:13.5px;cursor:pointer;color:var(--text)}
+.modepick button .ic{width:18px;height:18px}
+.modepick button[aria-pressed="true"]{background:var(--accent2);color:#FFFBF4}
+.topo{filter:sepia(.28) saturate(1.1) brightness(1.02)}
 .helpbtn{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);background:var(--surface);color:var(--mute);font:800 15px/1 var(--sans);cursor:pointer;display:grid;place-items:center}
 .helprow{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid var(--line)}
 .helprow:first-of-type{border-top:0}
@@ -275,7 +280,7 @@ details>*:not(summary){margin-top:8px}
   <div class="mapui right">
     <button class="gbtn" id="homeBtn" aria-label="Zum Hotel"></button>
     <button class="gbtn" id="fitBtn" aria-label="Ganze Insel"></button>
-    <button class="gbtn" id="satBtn" aria-label="Satellit an oder aus"></button>
+    <button class="gbtn" id="satBtn" aria-label="Kartenansicht wählen"></button>
     <button class="gbtn" id="locBtn" aria-label="Mein Standort"></button>
   </div>
   <div class="mapui bottom"><div class="glass tfbar" id="typefilter" role="group" aria-label="Kategorien filtern"></div></div>
@@ -550,9 +555,31 @@ function initMap(){
   const cont = map.getContainer();
   const MAPB = [[39.24, 2.28], [40.01, 3.52]];
   const base = L.imageOverlay("map.jpg", MAPB, {interactive:false, className:"basemap"}).addTo(map);
+  const roads = L.layerGroup();
+  DATA.edges.forEach(([u,v]) => { const A = DATA.nodes[u], B = DATA.nodes[v]; if(!A||!B) return;
+    const mid = [(A[0]+B[0])/2 + (B[1]-A[1])*0.06, (A[1]+B[1])/2 - (B[0]-A[0])*0.06];
+    const pts = []; for(let i=0;i<=8;i++){ const s=i/8; pts.push([(1-s)*(1-s)*A[0]+2*(1-s)*s*mid[0]+s*s*B[0], (1-s)*(1-s)*A[1]+2*(1-s)*s*mid[1]+s*s*B[1]]); }
+    L.polyline(pts,{color:"#6B4A2F",opacity:.07,weight:3,interactive:false,lineCap:"round"}).addTo(roads);
+    L.polyline(pts,{color:"#FFF4DF",opacity:.5,weight:1.2,interactive:false,lineCap:"round"}).addTo(roads); });
+  roads.addTo(map);
   const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {maxNativeZoom:17, maxZoom:19, keepBuffer:4, crossOrigin:true});
-  let satOn = false;
-  window.toggleSat = () => { satOn = !satOn; if(satOn){ sat.addTo(map); map.setMaxZoom(18); $("#attrib").textContent = "Bilder © Esri, Maxar, Earthstar Geographics"; } else { map.removeLayer(sat); if(map.getZoom() > 14) map.setZoom(14); map.setMaxZoom(14); $("#attrib").textContent = ""; } $("#satBtn").classList.toggle("on", satOn); };
+  const topo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {maxNativeZoom:18, maxZoom:19, keepBuffer:4, crossOrigin:true, className:"topo"});
+  const MODES = {relief:["Relief","insel","Gemalte Inselkarte"], karte:["Karte","route","Straßenkarte © Esri"], satellit:["Satellit","kamera","Bilder © Esri, Maxar, Earthstar Geographics"]};
+  let mode = "relief";
+  window.setMapMode = m => {
+    mode = m; [sat, topo].forEach(l => map.hasLayer(l) && map.removeLayer(l));
+    if(m === "relief"){ if(map.getZoom() > 14) map.setZoom(14); map.setMaxZoom(14); if(!map.hasLayer(roads)) roads.addTo(map); $("#attrib").textContent = ""; }
+    else { (m === "karte" ? topo : sat).addTo(map); map.removeLayer(roads); map.setMaxZoom(18); $("#attrib").textContent = MODES[m][2]; }
+    $("#satBtn").classList.toggle("on", m !== "relief");
+    document.querySelectorAll("#modepick button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m));
+  };
+  window.toggleSat = () => {
+    const ex = $("#modepick"); if(ex){ ex.remove(); return; }
+    const box = document.createElement("div"); box.id = "modepick"; box.className = "glass modepick";
+    box.innerHTML = Object.entries(MODES).map(([k,[l,i]]) => `<button data-m="${k}" aria-pressed="${k===mode}">${ic(i)}<span>${l}</span></button>`).join("");
+    box.querySelectorAll("button").forEach(b => b.onclick = () => { window.setMapMode(b.dataset.m); box.remove(); });
+    document.querySelector(".mapwrap").appendChild(box);
+  };
   map.setMaxZoom(14);
   const townMajor = L.layerGroup().addTo(map), townMinor = L.layerGroup();
   DATA.labels.forEach(([la,ln,name]) => { const major = MAJOR.has(name); L.marker([la,ln],{interactive:false,keyboard:false,icon:L.divIcon({className:"",html:`<span class="lbl town ${major?"major":""}">${esc(name)}</span>`,iconSize:null,iconAnchor:major?[20,-14]:[16,-12]})}).addTo(major?townMajor:townMinor); });
