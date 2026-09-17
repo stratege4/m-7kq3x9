@@ -1,4 +1,4 @@
-const APP = "mallorca-app-v5", TILES = "mallorca-tiles-v5";
+const APP = "mallorca-app-v6", TILES = "mallorca-tiles-v5";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-180.png", "./icon-512.png", "./map.jpg",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css",
   "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"];

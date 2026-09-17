@@ -114,7 +114,7 @@ p{margin:0}
 .modepick button{display:flex;align-items:center;gap:8px;border:0;background:transparent;border-radius:12px;padding:9px 12px;font-weight:700;font-size:13.5px;cursor:pointer;color:var(--text)}
 .modepick button .ic{width:18px;height:18px}
 .modepick button[aria-pressed="true"]{background:var(--accent2);color:#FFFBF4}
-.topo{filter:sepia(.28) saturate(1.1) brightness(1.02)}
+.topo{}
 .helpbtn{width:32px;height:32px;border-radius:50%;border:1px solid var(--line2);background:var(--surface);color:var(--mute);font:800 15px/1 var(--sans);cursor:pointer;display:grid;place-items:center}
 .helprow{display:grid;grid-template-columns:40px 1fr;gap:10px;align-items:start;padding:8px 0;border-top:1px solid var(--line)}
 .helprow:first-of-type{border-top:0}
@@ -550,8 +550,8 @@ function openHelp(){
 let map, markerLayer, routeLayer, poiLabelLayer, placingCb = null;
 function initMap(){
   if(!window.L){ $("#map").innerHTML = '<p style="padding:90px 20px;color:#fff">Karte konnte nicht geladen werden. Alles andere funktioniert.</p>'; return; }
-  map = L.map("map",{zoomControl:false, attributionControl:false, zoomSnap:0.25, minZoom:8.5, maxZoom:18, maxBounds:[[38.9,1.9],[40.35,3.9]], maxBoundsViscosity:0.8, tap:true});
-  if(innerWidth < 640) map.setView([39.66, 2.98], 9.25); else map.fitBounds([[39.27,2.36],[39.97,3.48]], {padding:[10,10]});
+  map = L.map("map",{zoomControl:false, attributionControl:false, zoomSnap:1, zoomDelta:1, wheelPxPerZoomLevel:120, minZoom:8.5, maxZoom:18, maxBounds:[[38.9,1.9],[40.35,3.9]], maxBoundsViscosity:0.8, tap:true});
+  if(innerWidth < 640) map.setView([39.66, 2.98], 9); else map.fitBounds([[39.27,2.36],[39.97,3.48]], {padding:[10,10]});
   const cont = map.getContainer();
   const MAPB = [[39.24, 2.28], [40.01, 3.52]];
   const base = L.imageOverlay("map.jpg", MAPB, {interactive:false, className:"basemap"}).addTo(map);
@@ -568,7 +568,7 @@ function initMap(){
   let mode = "relief";
   window.setMapMode = m => {
     mode = m; [sat, topo].forEach(l => map.hasLayer(l) && map.removeLayer(l));
-    if(m === "relief"){ if(map.getZoom() > 14) map.setZoom(14); map.setMaxZoom(14); if(!map.hasLayer(roads)) roads.addTo(map); if(!map.hasLayer(base)) base.addTo(map); $("#attrib").textContent = ""; }
+    if(m === "relief"){ if(map.getZoom() > 13) map.setZoom(13); map.setMaxZoom(13); if(!map.hasLayer(roads)) roads.addTo(map); if(!map.hasLayer(base)) base.addTo(map); $("#attrib").textContent = ""; }
     else { (m === "karte" ? topo : sat).addTo(map); map.removeLayer(roads); map.removeLayer(base); map.setMaxZoom(18); $("#attrib").textContent = MODES[m][2]; }
     if(m === "karte"){ townMajor.remove(); townMinor.remove(); } else { townMajor.addTo(map); if(map.getZoom() >= 11) townMinor.addTo(map); }
     $("#satBtn").classList.toggle("on", m !== "relief");
@@ -581,7 +581,7 @@ function initMap(){
     box.querySelectorAll("button").forEach(b => b.onclick = () => { window.setMapMode(b.dataset.m); box.remove(); });
     document.querySelector(".mapwrap").appendChild(box);
   };
-  map.setMaxZoom(14);
+  map.setMaxZoom(13);
   const townMajor = L.layerGroup().addTo(map), townMinor = L.layerGroup();
   DATA.labels.forEach(([la,ln,name]) => { const major = MAJOR.has(name); L.marker([la,ln],{interactive:false,keyboard:false,icon:L.divIcon({className:"",html:`<span class="lbl town ${major?"major":""}">${esc(name)}</span>`,iconSize:null,iconAnchor:major?[20,-14]:[16,-12]})}).addTo(major?townMajor:townMinor); });
   map.on("zoomend", () => { if(map.getZoom() >= 11 && mode !== "karte") townMinor.addTo(map); else townMinor.remove(); });
