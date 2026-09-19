@@ -1125,8 +1125,9 @@ $("#resetChips").onclick = () => setDay(today(), {chips:{energie:null,lust:[],fa
   const panel = $("#panel"), grip = $("#grip"), wrap = $("#wrap"), pull = $("#pullup");
   const relayout = () => { if(map) setTimeout(() => map.invalidateSize({pan:false}), 360); };
   const setFull = on => {
-    if(document.body.classList.contains("mapfull") === on) return;
-    const h = panel.offsetHeight;
+    const isFull = document.body.classList.contains("mapfull");
+    if(isFull === on) return;
+    const h = isFull ? (window._panelH || Math.round(innerHeight * 0.52)) : (window._panelH = panel.offsetHeight);
     document.body.classList.toggle("mapfull", on);
     try{ localStorage.setItem("mallorca-mapfull", on ? "1" : "0"); }catch(e){}
     if(map) map.panBy([0, on ? -h/2 : h/2], {animate:true, duration:.34});
