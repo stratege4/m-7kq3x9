@@ -24,11 +24,11 @@
   --good:#6E8B3D; --warn:#C98D1F; --bad:#A8475F; --pinring:#FFFBF4; --ink-on-color:#FFFBF4;
   --display:"Fraunces", Georgia, serif; --sans:"Manrope", -apple-system, system-ui, sans-serif;
   --safe-t:env(safe-area-inset-top,0px); --safe-b:env(safe-area-inset-bottom,0px);
-  --shadow:0 10px 28px rgba(92,62,34,.16);
+  --shadow:0 10px 28px rgba(92,62,34,.16); --panelh:52dvh;
   color-scheme:light;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:var(--bg);color:var(--text);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
 button{font:inherit;color:inherit}
 a{color:inherit}
 button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent2);outline-offset:2px}
@@ -40,18 +40,20 @@ p{margin:0}
 .eyebrow{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:700}
 
 /* map */
-.mapwrap{position:relative;height:min(66vh,700px);min-height:420px}
-#map{position:absolute!important;inset:0;background:#347F92}
-.leaflet-container{background:#347F92;font-family:var(--sans)}
+.mapwrap{position:fixed;inset:0;height:100dvh;z-index:0}
+#map{position:absolute!important;inset:0;background:#0E3A4A}
+.leaflet-container{background:#0E3A4A;font-family:var(--sans)}
+.leaflet-tile{transition:opacity .45s ease-out}
+.leaflet-fade-anim .leaflet-tile{will-change:opacity}
 .basemap{image-rendering:auto}
 .warm .leaflet-tile-pane{filter:sepia(.35) saturate(1.2) hue-rotate(-8deg) brightness(1.04) contrast(.97)}
 .relief{mix-blend-mode:multiply}
-.mapshade{position:absolute;inset:0;pointer-events:none;z-index:450;background:linear-gradient(to bottom,rgba(246,239,227,.35),rgba(246,239,227,0) 18%,rgba(246,239,227,0) 78%,rgba(246,239,227,.55));}
+.mapshade{position:absolute;inset:0;pointer-events:none;z-index:450;background:linear-gradient(to bottom,rgba(246,239,227,.30),rgba(246,239,227,0) 15%);}
 .mapui{position:absolute;z-index:700;pointer-events:none}
 .mapui>*{pointer-events:auto}
 .mapui.top{top:calc(var(--safe-t) + 10px);left:12px;right:12px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
 .mapui.right{right:12px;top:calc(var(--safe-t) + 70px);display:flex;flex-direction:column;gap:8px}
-.mapui.bottom{left:0;right:0;bottom:38px;display:flex;justify-content:center}
+.mapui.bottom{left:0;right:0;bottom:calc(var(--panelh) + 16px);display:flex;justify-content:center;transition:bottom .34s cubic-bezier(.32,.72,0,1)}
 .glass{background:rgba(255,251,244,.82);-webkit-backdrop-filter:blur(14px) saturate(1.4);backdrop-filter:blur(14px) saturate(1.4);border:1px solid var(--line2);border-radius:16px;box-shadow:var(--shadow)}
 .daybadge{padding:8px 13px;display:flex;flex-direction:column;line-height:1.2;font-size:12px;font-weight:700;color:var(--mute)}
 .daybadge .big{font-family:var(--display);font-size:22px;color:var(--text);display:flex;align-items:baseline;gap:4px}
@@ -61,11 +63,12 @@ p{margin:0}
 .gbtn.on{background:var(--accent2)!important;color:#FFFBF4!important}
 .gbtn{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;cursor:pointer;border:1px solid var(--line2);background:rgba(255,251,244,.82);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);box-shadow:var(--shadow);color:var(--text)}
 .tfbar{display:flex;gap:2px;padding:5px}
-.tfil{width:42px;height:42px;border-radius:12px;border:0;background:transparent;cursor:pointer;display:grid;place-items:center;color:var(--mute);opacity:.55}
+.tfil{height:42px;padding:0 14px;border-radius:12px;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;gap:7px;color:var(--mute);opacity:.5;font-size:12.5px;font-weight:800;letter-spacing:.01em}
+.tfl{white-space:nowrap}
 .tfil .ic{width:22px;height:22px}
 .tfil.on{opacity:1;color:var(--c);background:rgba(74,52,32,.06)}
 .offline{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;font-weight:700;color:var(--bad)}
-.attrib{position:absolute;right:6px;bottom:30px;z-index:460;font-size:9px;color:rgba(58,46,36,.55);pointer-events:none}
+.attrib{position:absolute;right:8px;bottom:calc(var(--panelh) + 2px);z-index:460;font-size:9px;color:rgba(255,255,255,.62);text-shadow:0 1px 2px rgba(0,0,0,.45);pointer-events:none;transition:bottom .34s cubic-bezier(.32,.72,0,1)}
 
 /* pins and labels */
 .mpin{position:relative;border-radius:50%;background:var(--c);color:#FFFBF4;display:grid;place-items:center;box-shadow:0 0 0 2.5px #FFFBF4,0 4px 10px rgba(74,52,32,.35);cursor:pointer;transition:transform .15s}
@@ -94,9 +97,17 @@ p{margin:0}
 .placing{position:absolute;left:12px;right:12px;top:calc(var(--safe-t) + 10px);z-index:900;padding:12px 14px;display:flex;align-items:center;gap:10px;font-weight:700}
 
 /* panel */
-.panel{position:relative;margin-top:-26px;background:var(--bg);border-radius:26px 26px 0 0;z-index:800;box-shadow:0 -10px 30px rgba(92,62,34,.14)}
-.panel:before{content:"";display:block;width:40px;height:5px;border-radius:5px;background:var(--line2);margin:9px auto 0}
-.wrap{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:14px calc(120px + var(--safe-b));display:flex;flex-direction:column;gap:18px}
+.panel{position:fixed;left:0;right:0;bottom:0;height:var(--panelh);background:var(--bg);border-radius:26px 26px 0 0;z-index:800;box-shadow:0 -10px 30px rgba(92,62,34,.16);display:flex;flex-direction:column;transition:transform .34s cubic-bezier(.32,.72,0,1)}
+.grip{flex:none;height:26px;display:grid;place-items:center;cursor:grab;touch-action:none;-webkit-user-select:none;user-select:none}
+.grip:before{content:"";width:44px;height:5px;border-radius:5px;background:var(--line2)}
+.wrap{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y;max-width:560px;width:100%;margin:0 auto;padding-inline:16px;padding-block:4px calc(118px + var(--safe-b));display:flex;flex-direction:column;gap:18px}
+body.mapfull{--panelh:0px}
+body.mapfull .panel{transform:translateY(101%)}
+body.mapfull .bottombar{transform:translateY(160%);pointer-events:none}
+.pullup{position:fixed;left:50%;bottom:calc(16px + var(--safe-b));transform:translateX(-50%) translateY(160%);z-index:950;pointer-events:none;display:flex;align-items:center;gap:7px;padding:11px 17px;border-radius:19px;font-size:13.5px;font-weight:800;cursor:pointer;transition:transform .34s cubic-bezier(.32,.72,0,1)}
+.pullup .ic{width:17px;height:17px;transform:rotate(180deg)}
+body.mapfull .pullup{transform:translateX(-50%) translateY(0);pointer-events:auto}
+body.mapfull .mapui.bottom{bottom:calc(78px + var(--safe-b))}
 #morning:empty,#evening:empty,#planpin:empty{display:none}
 .card{box-shadow:0 6px 18px rgba(92,62,34,.08);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px}
 .card.hi{background:linear-gradient(160deg,var(--surface2),var(--surface));border-color:var(--line2)}
@@ -125,13 +136,6 @@ p{margin:0}
 .dial .ic{width:28px;height:28px}
 .dial .cap{font-size:11.5px;font-weight:700;white-space:nowrap}
 .dial.on{background:var(--accent2);color:#FFFBF4;border-color:transparent}
-.lustrow{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:12px}
-.lust{border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;color:var(--mute)}
-.lust .dot{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--line);display:grid;place-items:center;transition:transform .15s,background .15s}
-.lust .ic{width:22px;height:22px}
-.lust .cap{font-size:10.5px;font-weight:700}
-.lust.on{color:var(--text)}
-.lust.on .dot{background:var(--accent);color:#FFFBF4;border-color:transparent;transform:scale(1.07)}
 
 /* suggestion cards */
 .scards{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 16px 8px;margin-inline:-16px;scrollbar-width:none}
@@ -154,7 +158,7 @@ p{margin:0}
 .sc-why{font-size:12.5px;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
 /* bottom bar */
-.bottombar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + var(--safe-b));background:linear-gradient(to top,var(--bg) 65%,rgba(246,239,227,0));z-index:900}
+.bottombar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + var(--safe-b));background:linear-gradient(to top,var(--bg) 65%,rgba(246,239,227,0));z-index:900;transition:transform .34s cubic-bezier(.32,.72,0,1)}
 .bottombar .in{max-width:560px;margin:0 auto;display:flex;gap:10px}
 .primary{flex:1;border:0;border-radius:18px;min-height:56px;background:#8B5E3C;color:#FFF8EF;font-weight:800;font-size:16.5px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 10px 24px rgba(139,94,60,.35)}
 .round{width:56px;height:56px;border-radius:18px;border:1px solid rgba(139,94,60,.25);background:#E8D9C0;color:#6B4A2F;box-shadow:0 10px 24px rgba(139,94,60,.2);cursor:pointer;display:grid;place-items:center}
@@ -259,7 +263,7 @@ details>*:not(summary){margin-top:8px}
 .checkrow{display:flex;flex-direction:column;gap:8px;padding:10px 0;border-top:1px solid var(--line)}
 .checkrow:first-child{border-top:0;padding-top:0}
 .checkrow b{display:flex;align-items:center;gap:8px}
-.typepick{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.typepick{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 .typepick button{border:1px solid var(--line);background:var(--surface);border-radius:14px;min-height:62px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:10px;font-weight:800;color:var(--mute);cursor:pointer}
 .typepick button .ic{width:22px;height:22px;color:var(--c)}
 .typepick button[aria-pressed="true"]{background:var(--c);color:#FFFBF4}
@@ -271,7 +275,7 @@ details>*:not(summary){margin-top:8px}
   <div id="map" role="application" aria-label="Mallorca-Karte"></div>
   <div class="mapshade"></div>
   <div class="mapui top">
-    <div class="glass daybadge" id="daybadge"></div>
+    <div></div>
     <div style="display:flex;gap:8px;align-items:center">
       <span class="glass offline" id="offline" hidden>offline</span>
       <button class="gbtn" id="menuBtn" aria-label="Menü"></button>
@@ -279,22 +283,18 @@ details>*:not(summary){margin-top:8px}
   </div>
   <div class="mapui right">
     <button class="gbtn" id="homeBtn" aria-label="Zum Hotel"></button>
-    <button class="gbtn" id="fitBtn" aria-label="Ganze Insel"></button>
-    <button class="gbtn" id="satBtn" aria-label="Kartenansicht wählen"></button>
-    <button class="gbtn" id="locBtn" aria-label="Mein Standort"></button>
   </div>
   <div class="mapui bottom"><div class="glass tfbar" id="typefilter" role="group" aria-label="Kategorien filtern"></div></div>
   <div class="attrib" id="attrib"></div>
 </div>
 
-<div class="panel"><div class="wrap">
+<div class="panel" id="panel"><div class="grip" id="grip" role="button" tabindex="0" aria-label="Menü ausblenden"></div><div class="wrap" id="wrap">
   <div id="morning"></div>
   <div id="evening"></div>
   <div id="planpin"></div>
   <section aria-label="Stimmung heute">
     <div class="rowhead" style="margin-bottom:8px"><h2>Eure Stimmung</h2><button class="helpbtn" id="helpBtn" aria-label="Was bedeuten die Symbole?">?</button></div>
     <div class="cycles" id="cycles"></div>
-    <div class="lustrow" id="lust"></div>
   </section>
   <section aria-labelledby="suggH">
     <div class="rowhead"><h2 id="suggH">Für euch heute</h2><button class="iconlink" id="resetChips" aria-label="Stimmung zurücksetzen"></button></div>
@@ -306,6 +306,7 @@ details>*:not(summary){margin-top:8px}
   <button class="primary" id="planBtn"></button>
   <button class="round" id="ideaBtn" aria-label="Neue Idee"></button>
 </div></div>
+<button class="glass pullup" id="pullup" aria-label="Menü einblenden"></button>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -384,6 +385,8 @@ const TRIP = {
   profil:"Paar Mitte 20. Mögen: Buchten und Meer, gutes Essen und Erlebnisse, schöne Cafés, besondere Spots mit Aussicht, schöne Landschaften. Wollen nicht: lange Wanderungen über 2 bis 3 Stunden, volle Touristenorte, Fine Dining. Essen gemischt, mal Snack, mal etwas schicker. Einer von beiden isst wenig Fleisch und ist wählerisch. Abendessen eher auswärts, Mischung mit Halbpension im Hotel. Fahrzeit bis 75 Minuten okay. Aktivität je nach Stimmung.",
 };
 const TYPES = {strand:["Bucht","--t-strand"], ort:["Ort","--t-ort"], essen:["Essen","--t-essen"], cafe:["Café","--t-cafe"], aussicht:["Natur","--t-aussicht"], erlebnis:["Erlebnis","--t-erlebnis"]};
+const GROUPS = {beach:["Beach","strand","--t-strand",["strand"]], food:["Food","essen","--t-essen",["essen","cafe"]], spots:["Spots & Orte","aussicht","--t-aussicht",["ort","aussicht","erlebnis"]]};
+const GOF = {}; Object.entries(GROUPS).forEach(([g,v]) => v[3].forEach(ty => GOF[ty] = g));
 const TYPELONG = {strand:"Strand & Bucht", ort:"Ort & Dorf", essen:"Essen", cafe:"Café", aussicht:"Aussicht & Natur", erlebnis:"Erlebnis"};
 const EMO = [["herz","herz","Top"],["gut","daumen","Gut"],["okay","neutral","Okay"],["nein","daumen","Nee"]];
 const SCORE = {herz:2, gut:1, okay:0, nein:-2};
@@ -442,7 +445,7 @@ function travel(a,b){
 /* ---------- state (lokal im Browser) ---------- */
 const KEY = "mallorca2026-v1";
 const S = Object.assign({over:{}, ratings:{}, days:{}, plans:{}, meta:{}}, LS.get(KEY) || {});
-S.filter = new Set(Object.keys(TYPES));
+S.filter = new Set(Object.keys(GROUPS));
 let saveFailed = false;
 function persist(){ const ok = LS.set(KEY, {over:S.over, ratings:S.ratings, days:S.days, plans:S.plans, meta:S.meta, savedAt:Date.now()}); if(!ok && !saveFailed){ saveFailed = true; toast("Speichern im Browser nicht möglich", "info", 4000); } }
 function write(col, id, data){ S[{places:"over"}[col]||col][id] = data; persist(); renderAll(); }
@@ -505,14 +508,7 @@ function reasonText(r){
 }
 
 /* ---------- Header und Stimmung ---------- */
-function renderHeader(){
-  const d = today(), n = dayDiff(d, TRIP.start) + 1;
-  let h;
-  if(n < 1) h = `<span class="big">${1-n}<small>Tage</small></span><span class="row">bis Mallorca</span>`;
-  else if(n > 8) h = `<span class="big">Zurück</span><span class="row">Reise vorbei</span>`;
-  else h = `<span class="big">Tag ${n}<small>/8</small></span><span class="row">${fmtDate(d)} ${ic("sonnenuntergang")} ${SUNSETS[d]||""}</span>`;
-  $("#daybadge").innerHTML = h;
-}
+function renderHeader(){}
 function renderChips(){
   const c = chips();
   const cyc = $("#cycles"); cyc.innerHTML = "";
@@ -525,14 +521,6 @@ function renderChips(){
     b.onclick = () => { const cur = chips(); cur[key] = opts[(i+1) % opts.length][0]; setDay(today(), {chips:cur}); };
     cyc.appendChild(b);
   }
-  const lu = $("#lust"); lu.innerHTML = "";
-  CHIPS.lust.forEach(([v,l,icon]) => {
-    const on = c.lust.includes(v);
-    const b = document.createElement("button"); b.className = "lust" + (on ? " on" : ""); b.setAttribute("aria-pressed", on);
-    b.innerHTML = `<span class="dot">${ic(icon)}</span><span class="cap">${l}</span>`;
-    b.onclick = () => { const cur = chips(); cur.lust = on ? cur.lust.filter(x=>x!==v) : [...cur.lust, v]; setDay(today(), {chips:cur}); };
-    lu.appendChild(b);
-  });
 }
 
 
@@ -542,46 +530,26 @@ function openHelp(){
     <p class="small muted">Einfach antippen, was heute passt. Nichts ist Pflicht. Die Vorschläge und der Tagesplan richten sich sofort danach.</p>
     <div><div class="eyebrow">Die vier Knöpfe · tippen zum Durchwechseln</div>
     ${rows([["energie2","Energie","wenig, normal oder viel. Bei wenig gibt es kurze Wege und höchstens zwei Stationen."],["auto","Fahrt","maximale Fahrzeit pro Strecke: 20, 45 oder 75 Minuten. Weiter entfernte Orte fallen weg."],["wetter","Wetter","Sonne, Wolken, Regen oder Wind. Bei Regen kommen Höhlen, Museen und Orte nach vorne."],["mond","Abends","Hotel, auswärts oder offen. Bei Hotel seid ihr rechtzeitig zum Abendessen zurück, bei auswärts plant die App Sonnenuntergang und Restaurant ein."]])}</div>
-    <div><div class="eyebrow">Worauf habt ihr Lust · mehrere möglich</div>
-    ${rows([["meer","Meer","Buchten, Strände und Baden"],["essen","Essen","Restaurants mit guter Auswahl ohne viel Fleisch"],["fernglas","Aussicht","Aussichtspunkte und Fotospots"],["cafe","Café","schöne Cafés und Pausen"],["erlebnis","Erleben","Höhlen, Märkte, Weingüter, Burgen"],["ruhe","Ruhe","ruhige Orte ohne Trubel"],["herz","Romantik","romantische Orte und Sonnenuntergänge"]])}</div>
-    <p class="small muted">Nichts angetippt heißt: egal. Mit „zurücksetzen“ fangt ihr neu an.</p>`);
+    <div><div class="eyebrow">Die drei Kategorien auf der Karte</div>
+    ${rows([["strand","Beach","Buchten, Strände und Badestellen"],["essen","Food","Restaurants, Bars und Cafés"],["aussicht","Spots & Orte","Städte, Aussichtspunkte, Höhlen, Märkte, Weingüter"]])}
+    <p class="small muted" style="margin-top:10px">Antippen blendet eine Kategorie auf der Karte aus oder ein.</p></div>
+    <p class="small muted">Nichts angetippt heißt: egal. Mit „zurücksetzen“ fangt ihr neu an. Das weiße Menü lässt sich nach unten wegwischen, dann habt ihr die ganze Karte.</p>`);
 }
 /* ---------- Karte ---------- */
 let map, markerLayer, routeLayer, poiLabelLayer, placingCb = null;
 function initMap(){
   if(!window.L){ $("#map").innerHTML = '<p style="padding:90px 20px;color:#fff">Karte konnte nicht geladen werden. Alles andere funktioniert.</p>'; return; }
-  map = L.map("map",{zoomControl:false, attributionControl:false, zoomSnap:1, zoomDelta:1, wheelPxPerZoomLevel:120, minZoom:8.5, maxZoom:18, maxBounds:[[38.9,1.9],[40.35,3.9]], maxBoundsViscosity:0.8, tap:true});
-  if(innerWidth < 640) map.setView([39.66, 2.98], 9); else map.fitBounds([[39.27,2.36],[39.97,3.48]], {padding:[10,10]});
-  const cont = map.getContainer();
-  const MAPB = [[39.24, 2.28], [40.01, 3.52]];
-  const base = L.imageOverlay("map.jpg", MAPB, {interactive:false, className:"basemap"}).addTo(map);
-  const roads = L.layerGroup();
-  DATA.edges.forEach(([u,v]) => { const A = DATA.nodes[u], B = DATA.nodes[v]; if(!A||!B) return;
-    const mid = [(A[0]+B[0])/2 + (B[1]-A[1])*0.06, (A[1]+B[1])/2 - (B[0]-A[0])*0.06];
-    const pts = []; for(let i=0;i<=8;i++){ const s=i/8; pts.push([(1-s)*(1-s)*A[0]+2*(1-s)*s*mid[0]+s*s*B[0], (1-s)*(1-s)*A[1]+2*(1-s)*s*mid[1]+s*s*B[1]]); }
-    L.polyline(pts,{color:"#6B4A2F",opacity:.07,weight:3,interactive:false,lineCap:"round"}).addTo(roads);
-    L.polyline(pts,{color:"#FFF4DF",opacity:.5,weight:1.2,interactive:false,lineCap:"round"}).addTo(roads); });
-  roads.addTo(map);
-  const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {maxNativeZoom:17, maxZoom:19, keepBuffer:4, crossOrigin:true});
-  const topo = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}", {maxNativeZoom:18, maxZoom:19, keepBuffer:4, crossOrigin:true, className:"topo"});
-  const MODES = {relief:["Relief","insel","Gemalte Inselkarte"], karte:["Karte","route","Straßenkarte © Esri"], satellit:["Satellit","kamera","Bilder © Esri, Maxar, Earthstar Geographics"]};
-  let mode = "relief";
-  window.setMapMode = m => {
-    mode = m; [sat, topo].forEach(l => map.hasLayer(l) && map.removeLayer(l));
-    if(m === "relief"){ if(map.getZoom() > 13) map.setZoom(13); map.setMaxZoom(13); if(!map.hasLayer(roads)) roads.addTo(map); if(!map.hasLayer(base)) base.addTo(map); $("#attrib").textContent = ""; }
-    else { (m === "karte" ? topo : sat).addTo(map); map.removeLayer(roads); map.removeLayer(base); map.setMaxZoom(18); $("#attrib").textContent = MODES[m][2]; }
-    if(m === "karte"){ townMajor.remove(); townMinor.remove(); } else { townMajor.addTo(map); if(map.getZoom() >= 11) townMinor.addTo(map); }
-    $("#satBtn").classList.toggle("on", m !== "relief");
-    document.querySelectorAll("#modepick button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m));
-  };
-  window.toggleSat = () => {
-    const ex = $("#modepick"); if(ex){ ex.remove(); return; }
-    const box = document.createElement("div"); box.id = "modepick"; box.className = "glass modepick";
-    box.innerHTML = Object.entries(MODES).map(([k,[l,i]]) => `<button data-m="${k}" aria-pressed="${k===mode}">${ic(i)}<span>${l}</span></button>`).join("");
-    box.querySelectorAll("button").forEach(b => b.onclick = () => { window.setMapMode(b.dataset.m); box.remove(); });
-    document.querySelector(".mapwrap").appendChild(box);
-  };
-  map.setMaxZoom(13);
+  map = L.map("map",{zoomControl:false, attributionControl:false, zoomSnap:1, zoomDelta:1, wheelPxPerZoomLevel:120, minZoom:8, maxZoom:17, maxBounds:[[38.2,0.6],[41.1,5.3]], maxBoundsViscosity:0.6, fadeAnimation:true, zoomAnimationThreshold:4, tap:true});
+  map.setView([39.72, 3.02], 10);
+  window._map = map;
+  window.panelPx = () => document.body.classList.contains("mapfull") ? 0 : (document.querySelector(".panel")?.offsetHeight || 0);
+  window.focusOn = (ll, z, dur) => { z = Math.round(z); const pt = map.project(L.latLng(ll), z).add([0, window.panelPx()/2]); map.flyTo(map.unproject(pt, z), z, {duration:dur||.7}); };
+  window.fitIsland = () => { const z = map.getSize().x > 560 ? 9 : (map.getSize().y - window.panelPx() < 300 ? 8 : 9); const pt = map.project(L.latLng(39.62, 2.95), z).add([0, window.panelPx()/2 + 16]); map.setView(map.unproject(pt, z), z, {animate:false}); };
+  const sat = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+    {maxNativeZoom:17, maxZoom:17, minZoom:8, keepBuffer:6, updateWhenZooming:false, updateWhenIdle:true, crossOrigin:true});
+  sat.addTo(map);
+  const mode = "satellit";
+  $("#attrib").textContent = "Bilder © Esri, Maxar, Earthstar Geographics";
   const townMajor = L.layerGroup().addTo(map), townMinor = L.layerGroup();
   DATA.labels.forEach(([la,ln,name]) => { const major = MAJOR.has(name); L.marker([la,ln],{interactive:false,keyboard:false,icon:L.divIcon({className:"",html:`<span class="lbl town ${major?"major":""}">${esc(name)}</span>`,iconSize:null,iconAnchor:major?[20,-14]:[16,-12]})}).addTo(major?townMajor:townMinor); });
   map.on("zoomend", () => { if(map.getZoom() >= 11 && mode !== "karte") townMinor.addTo(map); else townMinor.remove(); });
@@ -593,24 +561,14 @@ function initMap(){
   map.on("zoomend", syncZoom); el0 = map.getContainer();
   map.on("click", e => { if(placingCb){ const cb = placingCb; placingCb = null; document.body.classList.remove("crosshair"); $("#placing")?.remove(); cb(e.latlng); } });
   const tf = $("#typefilter");
-  Object.entries(TYPES).forEach(([k,[label,colorVar]]) => {
+  Object.entries(GROUPS).forEach(([k,[label,icon,colorVar]]) => {
     const b = document.createElement("button"); b.className = "tfil on"; b.style.setProperty("--c", `var(${colorVar})`);
-    b.setAttribute("aria-pressed","true"); b.setAttribute("aria-label", label); b.title = label; b.innerHTML = ic(k);
+    b.setAttribute("aria-pressed","true"); b.setAttribute("aria-label", label); b.title = label; b.innerHTML = ic(icon) + `<span class="tfl">${label}</span>`;
     b.onclick = () => { if(S.filter.has(k)) S.filter.delete(k); else S.filter.add(k); b.classList.toggle("on", S.filter.has(k)); b.setAttribute("aria-pressed", S.filter.has(k)); renderMarkers(); };
     tf.appendChild(b);
   });
-  $("#homeBtn").onclick = () => map.flyTo([TRIP.hotel.lat, TRIP.hotel.lng], 12, {duration:.8});
-  $("#fitBtn").onclick = () => map.flyToBounds([[39.27,2.36],[39.97,3.48]], {duration:.8});
-  $("#locBtn").onclick = () => {
-    if(!navigator.geolocation) return toast("Standort nicht verfügbar","info");
-    navigator.geolocation.getCurrentPosition(pos => {
-      const ll = [pos.coords.latitude, pos.coords.longitude];
-      if(window._me) window._me.remove();
-      window._me = L.circleMarker(ll,{radius:8,color:"#fff",weight:3,fillColor:"#4CC9F0",fillOpacity:1}).addTo(map);
-      map.flyTo(ll, 14, {duration:.8});
-    }, () => toast("Standort nicht freigegeben","info"), {enableHighAccuracy:true, timeout:8000});
-  };
-  syncZoom();
+  $("#homeBtn").onclick = () => window.focusOn([TRIP.hotel.lat, TRIP.hotel.lng], 12, .8);
+    syncZoom();
 }
 let el0 = null;
 function planStationIds(d=today()){ const pid = S.days[d]?.planId; const pl = pid && S.plans[pid]; return new Set((pl?.plan?.stationen||[]).map(s=>s.placeId).filter(Boolean)); }
@@ -621,7 +579,7 @@ function renderMarkers(){
   const inPlan = planStationIds();
   const rank = Object.fromEntries(currentTop.map((id,i)=>[id,i+1]));
   Object.values(places()).forEach(p => {
-    if(!S.filter.has(p.typ) || p.status==="abgelehnt") return;
+    if(!S.filter.has(GOF[p.typ] || "spots") || p.status==="abgelehnt") return;
     const colorVar = (TYPES[p.typ]||TYPES.ort)[1];
     const star = p.status==="gemerkt", done = p.status==="besucht", r = rank[p.id], plan = inPlan.has(p.id);
     const mini = z < 11 && !r && !plan && !star;
@@ -641,7 +599,7 @@ function renderMarkers(){
 }
 function focusPlace(id){
   const p = P(id); if(!p) return;
-  if(map) map.flyTo([p.lat,p.lng], Math.max(map.getZoom(), 12), {duration:.6});
+  if(map) window.focusOn([p.lat,p.lng], Math.max(map.getZoom(), 12), .6);
   setTimeout(()=>openPlace(id), map ? 420 : 0);
 }
 
@@ -848,7 +806,7 @@ function openIdea(){
   const html = `<div class="sheethead"><div class="ph"><span class="tbig" style="--c:var(--accent)">${ic("plus")}</span><div><div class="eyebrow">Neue Idee</div><h2>Was habt ihr entdeckt?</h2></div></div>${closeBtn}</div>
     <input type="text" id="iName" placeholder="Name, z. B. Restaurant Es Racó" autocomplete="off">
     <textarea id="iNote" placeholder="Notiz, optional (Tipp von wem, was bestellen …)"></textarea>
-    <div><div class="eyebrow">Art</div><div class="typepick" id="iType" style="margin-top:8px">${Object.entries(TYPES).map(([k,[l,c]])=>`<button data-t="${k}" style="--c:var(${c})" aria-pressed="false">${ic(k)}${l}</button>`).join("")}</div></div>
+    <div><div class="eyebrow">Art</div><div class="typepick" id="iType" style="margin-top:8px">${Object.entries(GROUPS).map(([k,[l,icon,c,ts]])=>`<button data-t="${ts[0]}" style="--c:var(${c})" aria-pressed="false">${ic(icon)}${l}</button>`).join("")}</div></div>
     <div><div class="eyebrow">Wann, optional</div><div class="chiprow" id="iDay" style="margin-top:8px">${days.map(d=>`<button class="chip" data-d="${d}" aria-pressed="false">${fmtDate(d)}</button>`).join("")}</div></div>
     <div><div class="eyebrow">Wo</div><div class="btnrow" style="margin-top:8px"><button class="btn" id="iMap">${ic("insel")}Auf Karte tippen</button><button class="btn" id="iHere">${ic("standort")}Ich bin hier</button></div><p class="small muted" id="iWhere" style="margin-top:6px">Noch kein Ort gesetzt</p></div>
     <button class="btn solid" id="iSave" disabled>${ic("haken")}Speichern</button>`;
@@ -1158,11 +1116,53 @@ function openMenu(){
 }
 
 /* ---------- Start ---------- */
-$("#menuBtn").innerHTML = ic("menu"); $("#homeBtn").innerHTML = ic("hotel"); $("#fitBtn").innerHTML = ic("insel"); $("#satBtn").innerHTML = ic("ebenen"); $("#satBtn").onclick = () => window.toggleSat && window.toggleSat(); $("#locBtn").innerHTML = ic("standort");
+$("#menuBtn").innerHTML = ic("menu"); $("#homeBtn").innerHTML = ic("hotel"); $("#pullup").innerHTML = ic("herunter") + "<span>Menü</span>";
 $("#planBtn").innerHTML = ic("kalender") + "<span>Tagesplan</span>"; $("#ideaBtn").innerHTML = ic("plus");
 $("#resetChips").innerHTML = ic("pfeilzurueck") + "zurücksetzen";
 $("#planBtn").onclick = openPlanner; $("#helpBtn").onclick = openHelp; $("#ideaBtn").onclick = openIdea; $("#menuBtn").onclick = openMenu;
 $("#resetChips").onclick = () => setDay(today(), {chips:{energie:null,lust:[],fahrt:null,wetter:null,abend:null}});
+(function panelSwipe(){
+  const panel = $("#panel"), grip = $("#grip"), wrap = $("#wrap"), pull = $("#pullup");
+  const relayout = () => { if(map) setTimeout(() => map.invalidateSize({pan:false}), 360); };
+  const setFull = on => {
+    if(document.body.classList.contains("mapfull") === on) return;
+    const h = panel.offsetHeight;
+    document.body.classList.toggle("mapfull", on);
+    try{ localStorage.setItem("mallorca-mapfull", on ? "1" : "0"); }catch(e){}
+    if(map) map.panBy([0, on ? -h/2 : h/2], {animate:true, duration:.34});
+    relayout();
+  };
+  window.setMapFull = setFull;
+  grip.onclick = () => setFull(true);
+  grip.onkeydown = e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); setFull(true); } };
+  pull.onclick = () => setFull(false);
+  let y0 = 0, dy = 0, armed = false, dragging = false;
+  const start = e => { y0 = e.touches ? e.touches[0].clientY : e.clientY; dy = 0; armed = true; dragging = false; };
+  const move = e => {
+    if(!armed) return;
+    const y = e.touches ? e.touches[0].clientY : e.clientY, d = y - y0;
+    if(!dragging){
+      if(d < 6){ if(d < -4) armed = false; return; }
+      dragging = true; panel.style.transition = "none";
+    }
+    dy = Math.max(0, d);
+    panel.style.transform = `translateY(${dy}px)`;
+    if(e.cancelable) e.preventDefault();
+  };
+  const end = () => { armed = false; if(!dragging) return; dragging = false; panel.style.transition = ""; panel.style.transform = ""; if(dy > 70) setFull(true); };
+  [grip, panel].forEach(el => {
+    el.addEventListener("touchstart", e => { if(el === panel && e.target.closest(".wrap") && wrap.scrollTop > 2) return; start(e); }, {passive:true});
+    el.addEventListener("touchmove", move, {passive:false});
+    el.addEventListener("touchend", end); el.addEventListener("touchcancel", end);
+  });
+  grip.addEventListener("mousedown", e => { start(e); const mm = ev => move(ev), mu = () => { end(); removeEventListener("mousemove", mm); removeEventListener("mouseup", mu); }; addEventListener("mousemove", mm); addEventListener("mouseup", mu); });
+  let py0 = null;
+  pull.addEventListener("touchstart", e => { py0 = e.touches[0].clientY; }, {passive:true});
+  pull.addEventListener("touchend", e => { if(py0 !== null && e.changedTouches[0].clientY - py0 < -30) setFull(false); py0 = null; });
+  try{ if(localStorage.getItem("mallorca-mapfull") === "1") document.body.classList.add("mapfull"); }catch(e){}
+  requestAnimationFrame(() => window.fitIsland && window.fitIsland());
+  addEventListener("resize", () => map && map.invalidateSize({pan:false}));
+})();
 addEventListener("online", renderAll); addEventListener("offline", renderAll);
 initMap(); renderAll();
 setInterval(renderAll, 5*60*1000);
